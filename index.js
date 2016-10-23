@@ -82,20 +82,26 @@ io.on('connection', function(socket){
     console.log('user disconnected');
   });
 
+
   socket.on('uploadDropboxData', function(data) {
     var dbx = new Dropbox({ accessToken: '8m941-K_2dAAAAAAAAAAEDr3J8hhf0ecYGEo8LD7RQaBiO7Bw63zRHIrqyN4M8E1' });
     var buf = new Buffer(data.blob, 'base64');
-    var file = data.randomString + ".webm";
-    var url = "public/" + file
-    fs.writeFile(url, buf, function(err) {
-      if(err) {
-        console.log("err", err);
-      } else {
-        socket.emit('uploadedFileUrl', file);
-        // console.log("done");
+    var fileName = data.randomString + ".webm";
 
-        // dbx.filesUpload({ path: '/' + data.randomString + ".webm", contents: })
-      }
+    console.log("in uploadDropboxData", buf);
+
+    dbx.filesUpload({path: '/' + fileName, contents: buf}).then(function(response) {
+        console.log("Uploaded file to Dropbox!!");
+
+        dbx.sharingCreateSharedLink({path: response.path_display, short_url: true}).then(function(response){
+          console.log("Sharable shortened link from Dropbox", response.url);
+          socket.emit('uploadedFileUrl', response.url);
+        }).catch(function(error) {
+            console.log("Failed to fetch sharable shortened link from Dropbox");
+        });
+        
+    }).catch(function(error) {
+      console.log("Failed to upload file to Dropbox");
     });
   });
 
