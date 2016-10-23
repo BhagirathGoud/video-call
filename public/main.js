@@ -15,7 +15,7 @@ function initialize() {
     }
   };
 
-  socket =  io('https://4ebedcad.ngrok.io');
+  socket =  io('https://appathon-videocall.herokuapp.com');
 
   var roomId = location.search && location.search.split('?')[1];
   socket.on('connect', function() {
