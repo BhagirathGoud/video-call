@@ -94,35 +94,76 @@
       }
 
       #chatWrapper {
-        width: 550px;
-        float: left;
+        margin: 0 auto;
+        width: 100%;
       }
 
       #chatInput {
-        width: 90%;
+        width: 75%;
+        padding: 10px;
+        float: left;
       }
 
       #sendBtn{
         padding: 15px 10px;
       }
-
+      #chatBox {
+        height: 0;
+        width: 0;
+        position: absolute;
+        top: 0;
+        clip: rect(0,0,0,0);
+        overflow: hidden;
+      }
+      .layout {
+        display: table;
+        width: 100%;
+      }
+      .left-side {
+        display: table-cell;
+        width: 75%;
+        position: relative;
+      }
+      .right-side {
+        display: table-cell;
+        width: 25%;
+      }
+      #remoteVideo {
+        position: absolute;
+        top: 0;
+        width: 90%%;
+        height: 100%;
+        z-index: -1;
+      }
+      #localVideo {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        bottom: 0;
+        right: 40px
+      }
     </style>
   </head>
   <body>
-    <video autoplay id="localVideo">
-    </video>
-    <video autoplay id="remoteVideo" poster="http://digitalsynopsis.com/wp-content/uploads/2015/10/gif-icons-menu-transition-animations-eatstreet-loading.gif">
-    </video>
-    <div id="chatWrapper">
-      <ul id="chatList">
+    <div class="layout">
+      <div class="left-side">
+        <video autoplay id="localVideo">
+        </video>
+        <video autoplay id="remoteVideo" poster="http://digitalsynopsis.com/wp-content/uploads/2015/10/gif-icons-menu-transition-animations-eatstreet-loading.gif">
+        </video>
+      </div>
+      <div class="right-side">
+        <h3>Chat Window</h3>
+        <div id="chatWrapper">
+          <ul id="chatList">
 
-      </ul>
-      <input type="text" name="name" value="" id="chatInput" disabled>
-      <button type="button" name="button" id="sendBtn" disabled>Send</button>
+          </ul>
+          <input type="text" name="name" value="" id="chatInput" disabled>
+          <button type="button" name="button" id="sendBtn" disabled>Send</button>
+        </div>
+      </div>
+      <textarea id="chatBox" name="name" rows="8" cols="40" disabled></textarea>
     </div>
-
-    <textarea id="chatBox" name="name" rows="8" cols="40" disabled></textarea>
-
     <script src="./jquery-2.2.4.min.js"></script>
     <script src="./adapter.min.js"></script>
     <script src="./socket.io.min.js"></script>
