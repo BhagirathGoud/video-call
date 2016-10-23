@@ -45,6 +45,10 @@ io.on('connection', function(socket){
      socket.leave(roomId);
    });
 
+   socket.on('negotiate', function(roomId) {
+     io.to(roomId).emit('negotiateSignal');
+   });
+
   socket.on('sendOffer', function(meta) {
     console.log("Recieved Offer from Agent", meta);
     roomSDP[meta.room] = meta.data;

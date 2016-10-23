@@ -6,7 +6,7 @@ function initialize() {
 
   var cfg = {'iceServers': [{'url': 'stun:23.21.150.121'}]};
   var con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
-  var peerConnnection1 = new RTCPeerConnection(cfg, con);
+  var peerConnnection = new RTCPeerConnection(cfg, con);
   var sdpConstraints = {
     optional: [],
     mandatory: {
@@ -41,35 +41,45 @@ function initialize() {
       attachMediaStream(el, e.stream);
     }
 
+    function oniceconnectionstatechange(event) {
+      var state = peerConnnection.iceConnectionState;
+      if (state == 'disconnected' || state == 'closed') {
+        alert("Session Terminated");
+      }
+      console.info('ice connection state change:', state);
+    }
+
     function onsignalingstatechange (state) {
       console.info('signaling state change:', state);
     }
 
-    function oniceconnectionstatechange (state) {
-      console.info('ice connection state change:', state);
-    }
 
     function onicegatheringstatechange (state) {
       console.info('ice gathering state change:', state);
     }
 
-    peerConnnection1.onsignalingstatechange = onsignalingstatechange;
-    peerConnnection1.oniceconnectionstatechange = oniceconnectionstatechange;
-    peerConnnection1.onicegatheringstatechange = onicegatheringstatechange;
+    peerConnnection.onsignalingstatechange = onsignalingstatechange;
+    peerConnnection.oniceconnectionstatechange = oniceconnectionstatechange;
+    peerConnnection.onicegatheringstatechange = onicegatheringstatechange;
 
-    peerConnnection1.onaddstream = handleOnaddstream;
+    peerConnnection.onaddstream = handleOnaddstream;
 
 
   }
 
 
   function createAnswer() {
+
+    peerConnnection.onnegotiationneeded = function() {
+      socket.emit('negotiate', currentRoom);
+    }
+
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-    peerConnnection1.onicecandidate = function (e) {
+    peerConnnection.onicecandidate = function (e) {
       console.log('ICE candidate (pc2)', e);
       if (e.candidate == null) {
-        sendLocalAnswer(JSON.stringify(peerConnnection1.localDescription));
+        sendLocalAnswer(JSON.stringify(peerConnnection.localDescription));
       }
     };
 
@@ -83,7 +93,7 @@ function initialize() {
     function successHandler(localStream) {
       var localVideo = document.getElementById('localVideo');
       localVideo.src = window.URL.createObjectURL(localStream);
-      peerConnnection1.addStream(localStream);
+      peerConnnection.addStream(localStream);
       // GEt Remote offer
       getRemoteOffer();
     }
@@ -91,7 +101,13 @@ function initialize() {
 
     socket.on('recieveOffer', function(data) {
       console.log("Recieved data from Server", data);
-      var offerDesc = new RTCSessionDescription(JSON.parse(data));
+      var offerDesc;
+      if (typeof data == "string") {
+        offerDesc = new RTCSessionDescription(JSON.parse(data));
+      } else {
+        offerDesc = new RTCSessionDescription(data);
+      }
+
       handleOffer(offerDesc);
     });
 
@@ -102,9 +118,9 @@ function initialize() {
 
     function handleOffer(desc) {
       console.log("Handled offer from Remote Offer");
-      peerConnnection1.setRemoteDescription(desc);
-      peerConnnection1.createAnswer(function(answerDesc) {
-        peerConnnection1.setLocalDescription(answerDesc);
+      peerConnnection.setRemoteDescription(desc);
+      peerConnnection.createAnswer(function(answerDesc) {
+        peerConnnection.setLocalDescription(answerDesc);
         console.log("Local Desctiption is set");
       },
       function () { console.warn("Couldn't create offer"); },
