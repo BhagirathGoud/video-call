@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var fs = require('fs');
+var Dropbox = require('dropbox');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -80,6 +82,22 @@ io.on('connection', function(socket){
     console.log('user disconnected');
   });
 
+  socket.on('uploadDropboxData', function(data) {
+    var dbx = new Dropbox({ accessToken: '8m941-K_2dAAAAAAAAAAEDr3J8hhf0ecYGEo8LD7RQaBiO7Bw63zRHIrqyN4M8E1' });
+    var buf = new Buffer(data.blob, 'base64');
+    var file = data.randomString + ".webm";
+    var url = "public/" + file
+    fs.writeFile(url, buf, function(err) {
+      if(err) {
+        console.log("err", err);
+      } else {
+        socket.emit('uploadedFileUrl', file);
+        // console.log("done");
+
+        // dbx.filesUpload({ path: '/' + data.randomString + ".webm", contents: })
+      }
+    });
+  });
 
 });
 
