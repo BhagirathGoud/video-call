@@ -3,13 +3,126 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <style media="screen">
+      #chatList{
+        height: 500px;
+        width: 500px;
+        overflow-y: scroll;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #FFF2E7;
+        list-style: none;
+        box-shadow: 1px 1px 1px #333;
+      }
 
+      .left-msg, .right-msg {
+        position: relative;
+        margin: 10px 0;
+        padding: 10px 0;
+        box-shadow: 1px 1px 1px #333;
+        border-radius: 5px;
+      }
+
+      .left-msg{
+        text-align: left;
+        color: #333;
+        background-color: #FFF;
+        padding-left: 40px;
+        margin-left: 10px;
+        border-radius: 5px;
+      }
+
+      .right-msg{
+        text-align: right;
+        background-color: #F5AC77;
+        color: #FFF;
+        padding-right: 40px;
+        margin-right: 10px;
+      }
+
+      .left-msg::before, .right-msg::before{
+        content: '';
+        width: 40px;
+        height: 40px;
+        display: block;
+        position: absolute;
+        top: 0;
+        background-size: cover;
+        background-color: transparent;
+        border-radius: 100%;
+      }
+
+      .left-msg::before {
+        left: -10px;
+        background-image: url('agent-avatar.png');
+      }
+
+      .right-msg::before {
+        right: -10px;
+        background-image: url('customer.png');
+      }
+
+      .right-msg::after {
+        content: '';
+        display: block;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        bottom: 0;
+        right: -10px;
+        background: transparent;
+        border: 15px solid #F5AC77;
+        border-top-color: transparent;
+        border: 15px solid transparent;
+        border-bottom-color: #F5AC77;
+        z-index: -1;
+      }
+
+      .left-msg::after {
+        content: '';
+        display: block;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        bottom: 0;
+        left: -10px;
+        background: transparent;
+        border: 15px solid transparent;
+        border-bottom-color: #FFF;
+        z-index: -1;
+      }
+
+      #chatWrapper {
+        width: 550px;
+        float: left;
+      }
+
+      #chatInput {
+        width: 90%;
+      }
+
+      #sendBtn{
+        padding: 15px 10px;
+      }
+
+    </style>
   </head>
   <body>
     <video autoplay id="localVideo">
     </video>
     <video autoplay id="remoteVideo" poster="http://digitalsynopsis.com/wp-content/uploads/2015/10/gif-icons-menu-transition-animations-eatstreet-loading.gif">
     </video>
+    <div id="chatWrapper">
+      <ul id="chatList">
+
+      </ul>
+      <input type="text" name="name" value="" id="chatInput" disabled>
+      <button type="button" name="button" id="sendBtn" disabled>Send</button>
+    </div>
+
+    <textarea id="chatBox" name="name" rows="8" cols="40" disabled></textarea>
+
     <script src="./jquery-2.2.4.min.js"></script>
     <script src="./adapter.min.js"></script>
     <script src="./socket.io.min.js"></script>

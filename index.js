@@ -20,7 +20,7 @@ io.on('connection', function(socket){
   console.log('a user connected');
 
   socket.on('createNewRoom', function(data) {
-    var room = data + '_' + Math.random().toString(36).substring(7);;
+    var room = data + '_' + Math.random().toString(36).substring(7);
     console.log("Create new room with id ", room);
     socket.join(room, function(err) {
       if(err) {

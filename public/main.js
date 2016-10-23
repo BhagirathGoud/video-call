@@ -5,8 +5,12 @@ function initialize() {
 
 
   var cfg = {'iceServers': [{'url': 'stun:23.21.150.121'}]};
-  var con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
+  var con = { 'optional': [{
+      'DtlsSrtpKeyAgreement': true,
+      }]
+    };
   var peerConnnection = new RTCPeerConnection(cfg, con);
+  var dataChannel;
   var sdpConstraints = {
     optional: [],
     mandatory: {
@@ -16,6 +20,8 @@ function initialize() {
   };
 
   socket =  io();
+  disableChatArea();
+
 
   var roomId = location.search && location.search.split('?')[1];
   socket.on('connect', function() {
@@ -34,7 +40,48 @@ function initialize() {
     console.log("Socket Disconnected");
   });
 
+  $("#sendBtn").on('click', function() {
+    sendMessage();
+  });
+
+
+  function enableChatArea() {
+    $('#chatBox').prop('disabled', false);
+    $("#sendBtn").prop('disabled', false);
+    $("#chatInput").prop('disabled', false);
+  }
+
+  function disableChatArea() {
+    $('#chatBox').prop('disabled', true);
+    $("#sendBtn").prop('disabled', true);
+    $("#chatInput").prop('disabled', true);
+  }
+
+  function displayMessage(data) {
+    var currentVal = $('#chatBox').val();
+    var msg = "\n Agent: "+data;
+    $('#chatList').append('<li class="left-msg">'+data+'</li>');
+    $('#chatBox').val(currentVal + msg);
+  };
+
+  function appendMyMessage(text) {
+    var currentVal = $('#chatBox').val();
+    var msg = "ME: "+ text;
+    $('#chatList').append('<li class="right-msg">'+text+'</li>');
+    $('#chatBox').val(currentVal + msg);
+  }
+
+  function sendMessage() {
+    var text = $("#chatInput").val();
+    console.log("Sending Data to Agent", text);
+    appendMyMessage(text);
+    dataChannel.send(text);
+    $("#chatInput").val('');
+  }
+
   function streamEvents() {
+
+
     function handleOnaddstream(e) {
       console.log('Got remote stream', e.stream);
       var el = document.getElementById('remoteVideo');
@@ -58,11 +105,44 @@ function initialize() {
       console.info('ice gathering state change:', state);
     }
 
+    function handleMessage() {
+      console.log('Received message: ' + event.data);
+      displayMessage(event.data);
+    }
+
+
+
+    function handleReceiveChannelStateChange() {
+      if (dataChannel) {
+        var state = dataChannel.readyState;
+        if (state === 'open') {
+          enableChatArea();
+        } else if (state === 'closed') {
+          disableChatArea();
+        }
+      }
+    }
+
+
+
+    function gotReceiveChannel(event) {
+      console.log('Received Data Channel Callback');
+      enableChatArea();
+      dataChannel = event.channel;
+      dataChannel.onmessage = handleMessage;
+      dataChannel.onopen = handleReceiveChannelStateChange;
+      dataChannel.onclose = handleReceiveChannelStateChange;
+    }
+
+
+
     peerConnnection.onsignalingstatechange = onsignalingstatechange;
     peerConnnection.oniceconnectionstatechange = oniceconnectionstatechange;
     peerConnnection.onicegatheringstatechange = onicegatheringstatechange;
 
     peerConnnection.onaddstream = handleOnaddstream;
+
+    peerConnnection.ondatachannel = gotReceiveChannel;
 
 
   }
