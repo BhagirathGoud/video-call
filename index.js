@@ -13,6 +13,8 @@ var nodeData = {};
 
 var roomSDP= {};
 
+var maxClientsPerRoom = 2;
+
 io.on('connection', function(socket){
 
   console.log('a user connected');
@@ -32,6 +34,13 @@ io.on('connection', function(socket){
   socket.on('joinRoom', function(roomId) {
     console.log(socket.rooms);
     console.log("Request to join room", roomId);
+
+    var clients_in_room = io.sockets.adapter.rooms[roomId];
+    if(clients_in_room && clients_in_room.length == maxClientsPerRoom){
+      console.log("Can't join room as clients per room exceeded max limit", roomId);
+      return;
+    }
+
     socket.join(roomId, function(err) {
       if(err) {
         console.log("Error in Joining New Room", data);

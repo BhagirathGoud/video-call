@@ -15,7 +15,7 @@ function initialize() {
     }
   };
 
-  socket =  io('https://appathon-videocall.herokuapp.com');
+  socket =  io();
 
   var roomId = location.search && location.search.split('?')[1];
   socket.on('connect', function() {
