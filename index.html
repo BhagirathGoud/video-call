@@ -2,8 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Client connection</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <style media="screen">
+      body {
+        font-family: 'Roboto', sans-serif;
+      }
       #chatList{
         height: 480px;
         width: 90%;
@@ -143,6 +147,24 @@
         bottom: 0;
         right: 40px
       }
+      .no-room {
+        text-align: center;
+        margin-top: 200px;
+      }
+      .no-room .room-control {
+        padding: 10px 20px;
+        border-radius: 4px;
+        border: solid 1px #e5e5e5;
+        margin: 5px 10px;
+      }
+      .no-room .room-btn {
+        background: #1e88e5;
+        border: solid 1px #0d47a1;
+        border-radius: 5px;
+        color: #fff;
+        padding: 10px 15px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -156,18 +178,16 @@
       <div class="right-side">
         <h3>Chat Window</h3>
         <div id="chatWrapper">
-          <ul id="chatList">
-
-          </ul>
+          <ul id="chatList"></ul>
           <input type="text" name="name" value="" id="chatInput" disabled>
           <button type="button" name="button" id="sendBtn" disabled>Send</button>
         </div>
       </div>
       <textarea id="chatBox" name="name" rows="8" cols="40" disabled></textarea>
     </div>
-    <script src="./jquery-2.2.4.min.js"></script>
-    <script src="./adapter.min.js"></script>
-    <script src="./socket.io.min.js"></script>
-    <script src="./main.js"></script>
+    <script src="./public/jquery-2.2.4.min.js"></script>
+    <script src="./public/adapter.min.js"></script>
+    <script src="./public/socket.io.min.js"></script>
+    <script src="./public/main.js"></script>
   </body>
 </html>
