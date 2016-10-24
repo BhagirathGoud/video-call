@@ -228,10 +228,12 @@ function initialize() {
 }
 
 if (roomID) {
+  $(".layout").css('display', 'block');
   initialize();
 } else {
   $(".layout")
     .addClass('no-room')
     .html("<h3>ERROR: You are not connected to any room.</h3>")
-    .append("<form action='' method='GET'><input type='text' name='room_id' placeholder='Enter a room id' class='room-control' /><input type='submit' value='Submit' class='room-btn' /></form>");
+    .append("<form action='' method='GET'><input type='text' name='room_id' placeholder='Enter a room id' class='room-control' /><input type='submit' value='Submit' class='room-btn' /></form>")
+    .css('display', 'block');
 }
