@@ -228,7 +228,7 @@ function initialize() {
 }
 
 if (roomID) {
-  $(".layout").css('display', 'block');
+  $(".layout").css('display', 'table');
   initialize();
 } else {
   $(".layout")
